@@ -1,0 +1,12 @@
+{
+  "name": "trivial-js",
+  "version": "0.0.1",
+  "author": "Marco Nicosia",
+  "dependencies": {
+    "strftime": "0.8.2"
+  },
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.3.x"
+  }
+}
