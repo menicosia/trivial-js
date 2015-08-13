@@ -1,5 +1,5 @@
 ---
 applications:
 - name: trivial-js
-  command: node time-http.js
+  memory: 128M
 

@@ -2,10 +2,15 @@ var http = require('http') ;
 var strftime = require('strftime') ;
 var sleep = require('sleep') ;
 var url = require('url') ;
+var port = 8080 ;
+var myIndex = 0 ;
 
-if (process.env.VCAP_SERVICES) {var db_uri = JSON.parse(process.env.VCAP_SERVICES) ;}
-if (process.env.VCAP_APP_PORT) { var port = process.env.VCAP_APP_PORT ;}
-else { var port = 8080 ; }
+if (process.env.VCAP_SERVICES) { var db_uri = JSON.parse(process.env.VCAP_SERVICES) ; }
+if (process.env.VCAP_APP_PORT) { port = process.env.VCAP_APP_PORT ; }
+else if (process.env.PORT) { port = process.env.PORT ; }
+if (process.env.CF_INSTANCE_INDEX) { myIndex = process.env.CF_INSTANCE_INDEX ; }
+else if (process.env.INSTANCE_INDEX) { myIndex = process.env.INSTANCE_INDEX ; }
+
 var data = "" ;
 
 timeServer = http.createServer(function (request, response) {
@@ -33,9 +38,10 @@ timeServer = http.createServer(function (request, response) {
         sleep.sleep(5) ;
         break ;
 	  default:
-	      data += "<p>" + strftime("%Y-%m-%d %H:%M") + "<br>\n" ;
-	      data += "<p>Request was: " + request.url + "<br>\n" ;
-	      data += "Database URI is: " + JSON.stringify(db_uri) + "</p>" ;
+        data += "<h1>Trivial Node App</h1>\n" ;
+	      data += "<p>" + "<h2>Instance " + myIndex + "</h2><br>\n" ;
+        data += "[" + strftime("%Y-%m-%d %H:%M") + "]";
+	      data += "  Request was: " + request.url + "<br>\n" ;
         data += "<hr>\n<A HREF=\"" + url.resolve(request.url, "env") + "\">/env</A>  " ;
         data += "<A HREF=\"" + url.resolve(request.url, "sleep") + "\">/sleep</A><br>\n" ;
 	  }
