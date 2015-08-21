@@ -9,5 +9,5 @@ COPY . /trivial-js
 RUN cd /trivial-js; npm install
 
 EXPOSE 8080
-CMD ["npm", "start"]
+CMD cd /trivial-js; npm start
 

@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "author": "Marco Nicosia",
   "dependencies": {
-    "nan": "*",
+    "nan": "1.x",
     "strftime": "0.8.2",
-    "sleep": "3.0.0"
+    "sleep": "2.0.0"
   },
   "engines": {
     "node": "0.10.x",
