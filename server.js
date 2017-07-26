@@ -4,6 +4,7 @@ var sleep = require('sleep') ;
 var url = require('url') ;
 var port = 8080 ;
 var myIndex = 0 ;
+var appHealth = 1 ;
 
 if (process.env.VCAP_SERVICES) { var db_uri = JSON.parse(process.env.VCAP_SERVICES) ; }
 if (process.env.VCAP_APP_PORT) { port = process.env.VCAP_APP_PORT ; }
@@ -12,6 +13,25 @@ if (process.env.CF_INSTANCE_INDEX) { myIndex = process.env.CF_INSTANCE_INDEX ; }
 else if (process.env.INSTANCE_INDEX) { myIndex = process.env.INSTANCE_INDEX ; }
 
 var data = "" ;
+
+function genDefaultPage(request, message) {
+    pageStr = "" ;
+    pageStr += "<h1>Trivial Node App</h1>\n" ;
+	  pageStr += "<p>" + "<b>Instance " + myIndex + "</b><br>\n" ;
+    pageStr += "[" + strftime("%Y-%m-%d %H:%M") + "]";
+	  pageStr += " Request was: " + request.url + "<br>\n" ;
+    if (message != null) {
+        pageStr += "<br><em>" + message + "</em><br><br>\n" ;
+    }
+    pageStr += "<hr>\n<A HREF=\"" + url.resolve(request.url, "/env") + "\">/env</A>" ;
+    pageStr += "  <A HREF=\"" + url.resolve(request.url, "/sleep") + "\">/sleep</A>\n" ;
+    pageStr += "  <A HREF=\"" + url.resolve(request.url, "/healthStatus") + "\">/healthStatus</A>\n" ;
+    pageStr += "  <A HREF=\"" + url.resolve(request.url, "/exit") + "\">/exit</A>\n" ;
+    pageStr += "<br>\n" ;
+    pageStr += "Set Health status: <A HREF=\"" + url.resolve(request.url, "/set/health=on") + "\">ON</A>\n" ;
+    pageStr += "  <A HREF=\"" + url.resolve(request.url, "/set/health=off") + "\">OFF</A><br>\n" ;
+    return (pageStr) ;
+}
 
 timeServer = http.createServer(function (request, response) {
     data = "" ;
@@ -36,14 +56,23 @@ timeServer = http.createServer(function (request, response) {
     case "/sleep":
         data += "Sleeping 5 seconds." ;
         sleep.sleep(5) ;
+        break ; 
+    case "/exit":
+        process.exit(0) ;
+        break ;
+    case "/set/health=off":
+        appHealth = 0 ;
+        data = genDefaultPage(request, "Health status set to OFF.") ;
+        break ;
+    case "/set/health=on":
+        appHealth = 1 ;
+        data = genDefaultPage(request, "Health status set to ON.") ;
+        break ;
+    case "/healthStatus":
+        data = appHealth ;
         break ;
 	  default:
-        data += "<h1>Trivial Node App</h1>\n" ;
-	      data += "<p>" + "<h2>Instance " + myIndex + "</h2><br>\n" ;
-        data += "[" + strftime("%Y-%m-%d %H:%M") + "]";
-	      data += "  Request was: " + request.url + "<br>\n" ;
-        data += "<hr>\n<A HREF=\"" + url.resolve(request.url, "env") + "\">/env</A>  " ;
-        data += "<A HREF=\"" + url.resolve(request.url, "sleep") + "\">/sleep</A><br>\n" ;
+        data = genDefaultPage(request) ;
 	  }
 
 	  response.end(data + '\n') ;
