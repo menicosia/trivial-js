@@ -1,5 +1,6 @@
 ---
 applications:
 - name: trivial-js
+  buildpack: nodejs_buildpack
   memory: 128M
 
